@@ -49,8 +49,14 @@ class ModelHandler:
             add_watermarker=False,
             local_files_only=True,
         ).to("cuda")
+        
+        # Ensure all components are in half precision
+        base_pipe.text_encoder.to(dtype=torch.float16)
+        base_pipe.text_encoder_2.to(dtype=torch.float16)
+        base_pipe.unet.to(dtype=torch.float16)
+        base_pipe.vae.to(dtype=torch.float16)
+        
         base_pipe.enable_xformers_memory_efficient_attention()
-
         return base_pipe
 
     def load_refiner(self):
@@ -70,8 +76,13 @@ class ModelHandler:
             add_watermarker=False,
             local_files_only=True,
         ).to("cuda")
+        
+        # Ensure all components are in half precision
+        refiner_pipe.text_encoder_2.to(dtype=torch.float16)
+        refiner_pipe.unet.to(dtype=torch.float16)
+        refiner_pipe.vae.to(dtype=torch.float16)
+        
         refiner_pipe.enable_xformers_memory_efficient_attention()
-
         return refiner_pipe
 
     def load_models(self):
