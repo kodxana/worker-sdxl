@@ -1,7 +1,7 @@
-# base image with cuda 12.1
-FROM nvidia/cuda:12.1.1-cudnn8-runtime-ubuntu22.04
+# base image with cuda 12.4
+FROM nvidia/cuda:12.4.1-cudnn-runtime-ubuntu22.04
 
-# install python 3.11 and pip
+# install python 3.11 and git
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y --no-install-recommends \
     software-properties-common \
@@ -17,15 +17,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN ln -sf /usr/bin/python3.11 /usr/local/bin/python && \
     ln -sf /usr/bin/python3.11 /usr/local/bin/python3
 
-# install uv
+# install uv from pip
 RUN pip install uv
 
 # create venv
 ENV PATH="/.venv/bin:${PATH}"
 RUN uv venv --python 3.11 /.venv
 
-# install dependencies
-RUN uv pip install torch --extra-index-url https://download.pytorch.org/whl/cu121
+# install torch with automatic backend detection
+ENV UV_TORCH_BACKEND=auto
+RUN uv pip install torch
 
 # install remaining dependencies from PyPI
 COPY requirements.txt /requirements.txt
