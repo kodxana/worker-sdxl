@@ -33,7 +33,7 @@ RUN uv pip install xformers
 
 # install remaining dependencies from PyPI (excluding torch and xformers)
 COPY requirements.txt /requirements.txt
-RUN uv pip install -r /requirements.txt --exclude torch --exclude xformers
+RUN uv pip install -r /requirements.txt
 
 # copy files
 COPY download_weights.py schemas.py handler.py test_input.json /
