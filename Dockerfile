@@ -24,16 +24,16 @@ RUN pip install uv
 ENV PATH="/.venv/bin:${PATH}"
 RUN uv venv --python 3.12 /.venv
 
-# install remaining dependencies from PyPI first
-COPY requirements.txt /requirements.txt
-RUN uv pip install -r /requirements.txt
-
-# install torch with automatic backend detection after other dependencies
+# install torch with automatic backend detection first
 ENV UV_TORCH_BACKEND=auto
 RUN uv pip install torch
 
-# upgrade xformers to ensure compatibility with latest torch
-RUN uv pip install --upgrade xformers
+# install xformers compatible with the torch version
+RUN uv pip install xformers
+
+# install remaining dependencies from PyPI (excluding torch and xformers)
+COPY requirements.txt /requirements.txt
+RUN uv pip install -r /requirements.txt --exclude torch --exclude xformers
 
 # copy files
 COPY download_weights.py schemas.py handler.py test_input.json /
